@@ -196,26 +196,7 @@ export default function LeadTrackerDashboard() {
     <main className="-m-6 pt-10">
       {/* Filter bar — identical structure to admin dashboard */}
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
-        <div className="flex items-center gap-3">
-          <div className="rounded-lg border border-gray-200 bg-gray-50/50 px-3 py-2 shadow-sm">
-            <div className="flex items-center gap-2">
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-br from-amber-300 via-blue-400 to-indigo-500">
-                <span className="text-xs font-bold text-white">T</span>
-              </div>
-              <div>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-sm font-semibold">TJR Trades</span>
-                  <span className="inline-flex items-center rounded-md bg-neutral-800 px-1.5 py-0.5 text-[10px] font-bold uppercase leading-none text-white">
-                    Admin
-                  </span>
-                </div>
-                <p className="text-xs text-muted-foreground">Lead Tracker</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div ref={searchRef} className="flex flex-1 items-center justify-end gap-2">
+        <div ref={searchRef} className="flex flex-1 items-center gap-2">
           {journey && (
             <Button
               variant="outline"
