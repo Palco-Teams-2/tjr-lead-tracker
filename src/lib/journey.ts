@@ -202,7 +202,7 @@ export async function buildJourney(query: string): Promise<JourneyResult | null>
     const ipList = [...ips];
     const ipLinked = await pool.query(
       `SELECT DISTINCT lead_email FROM fct_hyros_attributed_sales
-       WHERE lead_ips && $1::text[] AND NOT (LOWER(lead_email) = ANY($2::text[]))
+       WHERE lead_ips::text[] && $1::text[] AND NOT (LOWER(lead_email) = ANY($2::text[]))
        LIMIT 15`,
       [ipList, emailList]
     );
