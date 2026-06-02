@@ -1,0 +1,13 @@
+---
+description: Deploy workflow for tjr-lead-tracker
+alwaysApply: true
+---
+
+After any code change in this repo:
+
+1. Commit with a clear message
+2. Push to `main` on `Palco-Teams-2/tjr-lead-tracker`
+3. Deploy to Vercel production: `vercel deploy --prod --scope palcolabs --yes`
+
+Project: `palcolabs/tjr-lead-tracker`  
+Production URL: https://tjr-lead-tracker.vercel.app
