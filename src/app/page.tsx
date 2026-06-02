@@ -66,7 +66,6 @@ const SOURCE_VARIANT: Record<string, "default" | "secondary" | "outline"> = {
 
 export default function LeadTrackerPage() {
   const [query, setQuery] = useState("");
-  const [secret, setSecret] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [journey, setJourney] = useState<JourneyResult | null>(null);
@@ -82,9 +81,7 @@ export default function LeadTrackerPage() {
     setError(null);
     setShowSuggestions(false);
     try {
-      const params = new URLSearchParams({ q });
-      if (secret) params.set("secret", secret);
-      const res = await fetch(`/api/journey?${params}`);
+      const res = await fetch(`/api/journey?${new URLSearchParams({ q })}`);
       const data = await res.json();
       if (!res.ok || !data.ok) {
         setError(data.error ?? "Search failed");
@@ -98,7 +95,7 @@ export default function LeadTrackerPage() {
     } finally {
       setLoading(false);
     }
-  }, [secret]);
+  }, []);
 
   useEffect(() => {
     if (query.length < 2) {
@@ -186,13 +183,6 @@ export default function LeadTrackerPage() {
                 </div>
               )}
             </div>
-            <Input
-              type="password"
-              value={secret}
-              onChange={(e) => setSecret(e.target.value)}
-              placeholder="API secret"
-              className="sm:w-40"
-            />
             <Button type="submit" disabled={loading || !query.trim()} className="shrink-0">
               {loading ? <Loader2 className="size-4 animate-spin" /> : <Search className="size-4" />}
               Track

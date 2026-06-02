@@ -12,12 +12,12 @@ Single-page lead identity and journey tracker. Cross-identifies users from the *
 
 ```bash
 cp .env.example .env.local
-# fill in DATABASE_URL and ADMIN_SECRET
+# fill in DATABASE_URL
 npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000), enter your admin secret, and search by email, phone, or name.
+Open [http://localhost:3000](http://localhost:3000) and search by email, phone, or name.
 
 ## API
 
@@ -26,8 +26,6 @@ Open [http://localhost:3000](http://localhost:3000), enter your admin secret, an
 | `GET /api/journey?q=email@example.com` | Full stitched user journey |
 | `GET /api/search?q=partial` | Autocomplete suggestions |
 
-Pass `Authorization: Bearer <ADMIN_SECRET>` or `?secret=<ADMIN_SECRET>` on journey requests.
-
 ## Deploy
 
-Designed for Vercel. Set `DATABASE_URL` and `ADMIN_SECRET` in project env vars.
+Designed for Vercel. Set `DATABASE_URL` in project env vars.

@@ -1,19 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { buildJourney } from "@/lib/journey";
 
-function checkAuth(req: NextRequest): boolean {
-  const secret = process.env.ADMIN_SECRET;
-  if (!secret) return true;
-  const header = req.headers.get("authorization");
-  const param = req.nextUrl.searchParams.get("secret");
-  return header === `Bearer ${secret}` || param === secret;
-}
-
 export async function GET(req: NextRequest) {
-  if (!checkAuth(req)) {
-    return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
-  }
-
   const q = req.nextUrl.searchParams.get("q");
   if (!q?.trim()) {
     return NextResponse.json({ ok: false, error: "Missing query param q" }, { status: 400 });
