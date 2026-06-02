@@ -64,9 +64,9 @@ export const STAGE_LABELS: Record<string, string> = {
 };
 
 export const STAGE_COLORS: Record<string, string> = {
-  visitor: "bg-zinc-500/20 text-zinc-300 border-zinc-500/30",
-  lead: "bg-blue-500/20 text-blue-300 border-blue-500/30",
-  prospect: "bg-amber-500/20 text-amber-300 border-amber-500/30",
-  lt_customer: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
-  ht_customer: "bg-violet-500/20 text-violet-300 border-violet-500/30",
+  visitor: "bg-secondary text-secondary-foreground border-border",
+  lead: "bg-blue-500/10 text-blue-700 border-blue-200",
+  prospect: "bg-amber-500/10 text-amber-700 border-amber-200",
+  lt_customer: "bg-green-500/10 text-green-700 border-green-200",
+  ht_customer: "bg-violet-500/10 text-violet-700 border-violet-200",
 };

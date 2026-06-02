@@ -8,7 +8,6 @@ import {
   Phone,
   Globe,
   Tag,
-  DollarSign,
   Calendar,
   ChevronRight,
   Loader2,
@@ -18,57 +17,52 @@ import {
   Activity,
   ShoppingCart,
   PhoneCall,
+  Route,
 } from "lucide-react";
 import { cn, formatCurrency, formatDate } from "@/lib/utils";
 import { STAGE_COLORS, STAGE_LABELS } from "@/lib/normalize";
 import type { JourneyResult, SearchSuggestion } from "@/lib/types";
+import { KpiCard } from "@/components/dashboard/kpi-card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 
 const EVENT_ICONS: Record<string, React.ReactNode> = {
-  lead_created: <User className="w-4 h-4" />,
-  optin: <Mail className="w-4 h-4" />,
-  sale: <ShoppingCart className="w-4 h-4" />,
-  call_booked: <PhoneCall className="w-4 h-4" />,
-  call_cancelled: <PhoneCall className="w-4 h-4" />,
-  membership: <Tag className="w-4 h-4" />,
+  lead_created: <User className="size-4" />,
+  optin: <Mail className="size-4" />,
+  sale: <ShoppingCart className="size-4" />,
+  call_booked: <PhoneCall className="size-4" />,
+  call_cancelled: <PhoneCall className="size-4" />,
+  membership: <Tag className="size-4" />,
 };
 
-const EVENT_COLORS: Record<string, string> = {
-  lead_created: "border-zinc-500 bg-zinc-500/10",
-  optin: "border-blue-500 bg-blue-500/10",
-  sale: "border-emerald-500 bg-emerald-500/10",
-  call_booked: "border-amber-500 bg-amber-500/10",
-  call_cancelled: "border-red-500 bg-red-500/10",
-  membership: "border-violet-500 bg-violet-500/10",
+const EVENT_ACCENT: Record<string, string> = {
+  lead_created: "border-l-zinc-400",
+  optin: "border-l-blue-500",
+  sale: "border-l-green-500",
+  call_booked: "border-l-amber-500",
+  call_cancelled: "border-l-red-500",
+  membership: "border-l-violet-500",
 };
 
-const SOURCE_BADGE: Record<string, string> = {
-  hyros: "bg-orange-500/20 text-orange-300",
-  crm: "bg-blue-500/20 text-blue-300",
-  whop: "bg-pink-500/20 text-pink-300",
-  calendly: "bg-teal-500/20 text-teal-300",
-  lto: "bg-cyan-500/20 text-cyan-300",
-  triage: "bg-yellow-500/20 text-yellow-300",
+const SOURCE_VARIANT: Record<string, "default" | "secondary" | "outline"> = {
+  hyros: "default",
+  crm: "secondary",
+  whop: "outline",
+  calendly: "outline",
+  lto: "outline",
+  triage: "outline",
 };
-
-function StatCard({
-  label,
-  value,
-  icon,
-}: {
-  label: string;
-  value: string | number;
-  icon: React.ReactNode;
-}) {
-  return (
-    <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
-      <div className="flex items-center gap-2 text-zinc-500 text-xs uppercase tracking-wider mb-2">
-        {icon}
-        {label}
-      </div>
-      <div className="text-2xl font-semibold text-white">{value}</div>
-    </div>
-  );
-}
 
 export default function LeadTrackerPage() {
   const [query, setQuery] = useState("");
@@ -140,25 +134,24 @@ export default function LeadTrackerPage() {
   }
 
   return (
-    <div className="min-h-screen">
-      {/* Header */}
-      <header className="border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row sm:items-center gap-4">
+    <div className="min-h-screen bg-background">
+      {/* Top bar — matches internal-app filter bar pattern */}
+      <div className="border-b border-border bg-card">
+        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center">
           <div className="flex items-center gap-3 shrink-0">
-            <div className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center">
-              <Activity className="w-5 h-5 text-white" />
+            <div className="flex aspect-square size-8 items-center justify-center rounded-sm bg-primary">
+              <Route className="size-4 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-lg font-semibold text-white leading-tight">TJR Lead Tracker</h1>
-              <p className="text-xs text-zinc-500">Hyros · Dregs · Fingerprint · tjr_mm6</p>
+              <h1 className="text-sm font-semibold text-foreground leading-tight">Lead Tracker</h1>
+              <p className="text-xs text-muted-foreground">Palco Labs · tjr_mm6</p>
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="flex-1 flex gap-2" ref={searchRef}>
+          <form onSubmit={handleSubmit} className="flex flex-1 flex-col gap-2 sm:flex-row" ref={searchRef}>
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
-              <input
-                type="text"
+              <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
                 value={query}
                 onChange={(e) => {
                   setQuery(e.target.value);
@@ -166,10 +159,10 @@ export default function LeadTrackerPage() {
                 }}
                 onFocus={() => setShowSuggestions(true)}
                 placeholder="Search by email, phone, or name…"
-                className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-zinc-900 border border-zinc-700 text-white placeholder:text-zinc-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 text-sm"
+                className="pl-9"
               />
               {showSuggestions && suggestions.length > 0 && (
-                <div className="absolute top-full mt-1 w-full rounded-lg border border-zinc-700 bg-zinc-900 shadow-xl z-50 overflow-hidden">
+                <div className="absolute top-full z-50 mt-1 w-full overflow-hidden rounded-md border border-border bg-popover shadow-lg">
                   {suggestions.map((s) => (
                     <button
                       key={s.email}
@@ -178,253 +171,264 @@ export default function LeadTrackerPage() {
                         setQuery(s.email);
                         fetchJourney(s.email);
                       }}
-                      className="w-full px-4 py-2.5 text-left hover:bg-zinc-800 flex items-center gap-3 text-sm transition-colors"
+                      className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm transition-colors hover:bg-accent"
                     >
-                      <Mail className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
-                      <div className="min-w-0">
-                        <div className="text-white truncate">{s.email}</div>
-                        {s.name && <div className="text-zinc-500 text-xs truncate">{s.name}</div>}
+                      <Mail className="size-3.5 shrink-0 text-muted-foreground" />
+                      <div className="min-w-0 flex-1">
+                        <div className="truncate text-foreground">{s.email}</div>
+                        {s.name && <div className="truncate text-xs text-muted-foreground">{s.name}</div>}
                       </div>
                       {s.eventCount != null && s.eventCount > 0 && (
-                        <span className="ml-auto text-xs text-emerald-400 shrink-0">{s.eventCount} sales</span>
+                        <span className="shrink-0 text-xs text-green-600">{s.eventCount} sales</span>
                       )}
                     </button>
                   ))}
                 </div>
               )}
             </div>
-            <input
+            <Input
               type="password"
               value={secret}
               onChange={(e) => setSecret(e.target.value)}
               placeholder="API secret"
-              className="w-32 sm:w-40 px-3 py-2.5 rounded-lg bg-zinc-900 border border-zinc-700 text-white placeholder:text-zinc-500 focus:outline-none focus:border-zinc-500 text-sm"
+              className="sm:w-40"
             />
-            <button
-              type="submit"
-              disabled={loading || !query.trim()}
-              className="px-5 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium transition-colors flex items-center gap-2 shrink-0"
-            >
-              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+            <Button type="submit" disabled={loading || !query.trim()} className="shrink-0">
+              {loading ? <Loader2 className="size-4 animate-spin" /> : <Search className="size-4" />}
               Track
-            </button>
+            </Button>
           </form>
         </div>
-      </header>
+      </div>
 
-      <main className="max-w-7xl mx-auto px-4 py-6">
-        {/* Empty state */}
-        {!journey && !loading && !error && (
-          <div className="flex flex-col items-center justify-center py-32 text-center animate-fade-in">
-            <div className="w-16 h-16 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-6">
-              <TrendingUp className="w-8 h-8 text-zinc-600" />
+      {/* Main content shell — matches ApplicationShell2 inset panel */}
+      <div className="p-2">
+        <div className="mx-auto min-h-[calc(100vh-4.5rem)] max-w-7xl rounded-xl border border-border bg-white p-6 shadow-sm">
+          {!journey && !loading && !error && (
+            <div className="flex flex-col items-center justify-center py-32 text-center">
+              <div className="mb-6 flex size-16 items-center justify-center rounded-xl border border-border bg-muted">
+                <TrendingUp className="size-8 text-muted-foreground" />
+              </div>
+              <h2 className="mb-2 text-xl font-semibold text-foreground">Search a lead to build their journey</h2>
+              <p className="max-w-md text-sm text-muted-foreground">
+                Cross-identifies users from tjr_mm6 — Hyros opt-ins, sales, calls, CRM records, Whop memberships, and shared IP signals.
+              </p>
             </div>
-            <h2 className="text-xl font-medium text-zinc-300 mb-2">Search a lead to build their journey</h2>
-            <p className="text-zinc-500 text-sm max-w-md">
-              Cross-identifies users from tjr_mm6 — Hyros opt-ins, sales, calls, CRM records, Whop memberships, and shared IP/device signals.
-            </p>
-          </div>
-        )}
+          )}
 
-        {/* Error */}
-        {error && (
-          <div className="flex items-center gap-3 p-4 rounded-xl border border-red-500/30 bg-red-500/10 text-red-300 mb-6 animate-fade-in">
-            <AlertCircle className="w-5 h-5 shrink-0" />
-            <span>{error}</span>
-          </div>
-        )}
-
-        {/* Loading */}
-        {loading && (
-          <div className="flex items-center justify-center py-32">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-          </div>
-        )}
-
-        {/* Results */}
-        {journey && !loading && (
-          <div className="space-y-6 animate-fade-in">
-            {/* Profile + Stats row */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-              {/* Profile card */}
-              <div className="lg:col-span-1 rounded-xl border border-zinc-800 bg-zinc-900/50 p-5">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-600 to-violet-600 flex items-center justify-center text-lg font-bold text-white">
-                      {(journey.profile?.name ?? journey.profile?.email ?? "?")[0]?.toUpperCase()}
-                    </div>
-                    <div>
-                      <h2 className="font-semibold text-white">{journey.profile?.name ?? "Unknown"}</h2>
-                      <p className="text-sm text-zinc-400">{journey.profile?.email}</p>
-                    </div>
-                  </div>
-                  <span
-                    className={cn(
-                      "text-xs px-2.5 py-1 rounded-full border font-medium",
-                      STAGE_COLORS[journey.summary.lifecycleStage] ?? STAGE_COLORS.visitor
-                    )}
-                  >
-                    {STAGE_LABELS[journey.summary.lifecycleStage] ?? journey.summary.lifecycleStage}
-                  </span>
-                </div>
-
-                <div className="space-y-2.5 text-sm">
-                  {journey.profile?.phone && (
-                    <div className="flex items-center gap-2 text-zinc-400">
-                      <Phone className="w-3.5 h-3.5" />
-                      {journey.profile.phone}
-                    </div>
-                  )}
-                  {journey.profile?.country && (
-                    <div className="flex items-center gap-2 text-zinc-400">
-                      <Globe className="w-3.5 h-3.5" />
-                      {journey.profile.country}
-                    </div>
-                  )}
-                  {journey.profile?.utmSource && (
-                    <div className="flex items-center gap-2 text-zinc-400">
-                      <Tag className="w-3.5 h-3.5" />
-                      UTM: {journey.profile.utmSource}
-                    </div>
-                  )}
-                  {journey.profile?.createdAt && (
-                    <div className="flex items-center gap-2 text-zinc-400">
-                      <Calendar className="w-3.5 h-3.5" />
-                      First seen {formatDate(journey.profile.createdAt)}
-                    </div>
-                  )}
-                  {journey.profile?.dubId && (
-                    <div className="flex items-center gap-2 text-zinc-400">
-                      <Link2 className="w-3.5 h-3.5" />
-                      Dub: <code className="text-xs bg-zinc-800 px-1.5 py-0.5 rounded">{journey.profile.dubId}</code>
-                    </div>
-                  )}
-                </div>
-
-                {journey.summary.attributionSources.length > 0 && (
-                  <div className="mt-4 pt-4 border-t border-zinc-800">
-                    <p className="text-xs text-zinc-500 uppercase tracking-wider mb-2">Attribution sources</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {journey.summary.attributionSources.map((s) => (
-                        <span key={s} className="text-xs px-2 py-0.5 rounded-full bg-orange-500/15 text-orange-300 border border-orange-500/20">
-                          {s}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Stats grid */}
-              <div className="lg:col-span-2 grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <StatCard label="Events" value={journey.summary.totalEvents} icon={<Activity className="w-3.5 h-3.5" />} />
-                <StatCard label="Hyros Sales" value={journey.summary.hyrosSales} icon={<ShoppingCart className="w-3.5 h-3.5" />} />
-                <StatCard label="Revenue" value={formatCurrency(journey.summary.totalRevenue)} icon={<DollarSign className="w-3.5 h-3.5" />} />
-                <StatCard label="Linked Emails" value={journey.summary.linkedEmails} icon={<Link2 className="w-3.5 h-3.5" />} />
-                <StatCard label="Opt-ins" value={journey.summary.hyrosOptins} icon={<Mail className="w-3.5 h-3.5" />} />
-                <StatCard label="Calls" value={journey.summary.hyrosCalls + journey.summary.bookedCalls} icon={<PhoneCall className="w-3.5 h-3.5" />} />
-                <StatCard label="CRM Sales" value={journey.summary.crmSales} icon={<DollarSign className="w-3.5 h-3.5" />} />
-                <StatCard label="Whop" value={journey.summary.whopMemberships} icon={<Tag className="w-3.5 h-3.5" />} />
-              </div>
+          {error && (
+            <div className="mb-6 flex items-center gap-3 rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-destructive">
+              <AlertCircle className="size-5 shrink-0" />
+              <span className="text-sm">{error}</span>
             </div>
+          )}
 
-            {/* Linked identities */}
-            {journey.linkedIdentities.length > 0 && (
-              <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
-                <h3 className="text-sm font-medium text-amber-300 mb-3 flex items-center gap-2">
-                  <Link2 className="w-4 h-4" />
-                  Cross-identified emails ({journey.linkedIdentities.length})
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {journey.linkedIdentities.map((i) => (
-                    <button
-                      key={i.email}
-                      onClick={() => {
-                        setQuery(i.email);
-                        fetchJourney(i.email);
-                      }}
-                      className="text-xs px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-700 hover:border-amber-500/50 text-zinc-300 hover:text-white transition-colors"
-                    >
-                      {i.email}
-                      <span className="text-zinc-500 ml-1.5">· {i.linkReason}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
+          {loading && (
+            <div className="flex items-center justify-center py-32">
+              <Loader2 className="size-8 animate-spin text-muted-foreground" />
+            </div>
+          )}
 
-            {/* Timeline */}
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900/30 overflow-hidden">
-              <div className="px-5 py-4 border-b border-zinc-800 flex items-center justify-between">
-                <h3 className="font-medium text-white">User Journey</h3>
-                <span className="text-xs text-zinc-500">Match: {journey.matchType} · {journey.events.length} events</span>
-              </div>
-
-              <div className="divide-y divide-zinc-800/50 max-h-[600px] overflow-y-auto">
-                {journey.events.map((event) => (
-                  <div key={event.id} className="px-5 py-4 hover:bg-zinc-800/20 transition-colors">
-                    <div className="flex items-start gap-4">
-                      <div
-                        className={cn(
-                          "w-9 h-9 rounded-lg border flex items-center justify-center shrink-0",
-                          EVENT_COLORS[event.type] ?? "border-zinc-600 bg-zinc-800"
-                        )}
-                      >
-                        {EVENT_ICONS[event.type] ?? <Activity className="w-4 h-4" />}
-                      </div>
-
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-medium text-white text-sm">{event.title}</span>
-                          <span className={cn("text-[10px] px-1.5 py-0.5 rounded font-medium uppercase", SOURCE_BADGE[event.sourceSystem] ?? "bg-zinc-700 text-zinc-300")}>
-                            {event.sourceSystem}
-                          </span>
-                          {event.value != null && event.value > 0 && (
-                            <span className="text-xs text-emerald-400 font-medium">{formatCurrency(event.value, event.currency ?? "USD")}</span>
-                          )}
+          {journey && !loading && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+                <Card className="py-0 lg:col-span-1">
+                  <CardHeader className="border-b pb-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <Avatar size="lg">
+                          <AvatarFallback className="bg-primary text-primary-foreground">
+                            {(journey.profile?.name ?? journey.profile?.email ?? "?")[0]?.toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <CardTitle className="text-base">{journey.profile?.name ?? "Unknown"}</CardTitle>
+                          <CardDescription>{journey.profile?.email}</CardDescription>
                         </div>
-                        <p className="text-xs text-zinc-500 mt-1">{formatDate(event.occurredAt)}</p>
-
-                        {event.meta && Object.keys(event.meta).length > 0 && (
-                          <div className="mt-2 flex flex-wrap gap-1.5">
-                            {Object.entries(event.meta)
-                              .filter(([, v]) => v != null && v !== "")
-                              .slice(0, 5)
-                              .map(([k, v]) => (
-                                <span key={k} className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400">
-                                  {k}: {Array.isArray(v) ? v.slice(0, 3).join(", ") : String(v)}
-                                </span>
-                              ))}
-                          </div>
-                        )}
                       </div>
-
-                      {event.payload != null && (
-                        <button
-                          onClick={() => setExpandedEvent(expandedEvent === event.id ? null : event.id)}
-                          className="text-zinc-500 hover:text-zinc-300 transition-colors shrink-0"
-                        >
-                          <ChevronRight className={cn("w-4 h-4 transition-transform", expandedEvent === event.id && "rotate-90")} />
-                        </button>
+                      <Badge
+                        variant="outline"
+                        className={cn("border", STAGE_COLORS[journey.summary.lifecycleStage] ?? STAGE_COLORS.visitor)}
+                      >
+                        {STAGE_LABELS[journey.summary.lifecycleStage] ?? journey.summary.lifecycleStage}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="py-4">
+                    <div className="space-y-2.5 text-sm text-muted-foreground">
+                      {journey.profile?.phone && (
+                        <div className="flex items-center gap-2">
+                          <Phone className="size-3.5" />
+                          {journey.profile.phone}
+                        </div>
+                      )}
+                      {journey.profile?.country && (
+                        <div className="flex items-center gap-2">
+                          <Globe className="size-3.5" />
+                          {journey.profile.country}
+                        </div>
+                      )}
+                      {journey.profile?.utmSource && (
+                        <div className="flex items-center gap-2">
+                          <Tag className="size-3.5" />
+                          UTM: {journey.profile.utmSource}
+                        </div>
+                      )}
+                      {journey.profile?.createdAt && (
+                        <div className="flex items-center gap-2">
+                          <Calendar className="size-3.5" />
+                          First seen {formatDate(journey.profile.createdAt)}
+                        </div>
+                      )}
+                      {journey.profile?.dubId && (
+                        <div className="flex items-center gap-2">
+                          <Link2 className="size-3.5" />
+                          Dub: <code className="rounded bg-muted px-1.5 py-0.5 text-xs text-foreground">{journey.profile.dubId}</code>
+                        </div>
                       )}
                     </div>
 
-                    {expandedEvent === event.id && event.payload != null && (
-                      <pre className="mt-3 p-3 rounded-lg bg-zinc-950 border border-zinc-800 text-[11px] text-zinc-400 overflow-x-auto max-h-64">
-                        {JSON.stringify(event.payload, null, 2)}
-                      </pre>
+                    {journey.summary.attributionSources.length > 0 && (
+                      <>
+                        <Separator className="my-4" />
+                        <p className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                          Attribution sources
+                        </p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {journey.summary.attributionSources.map((s) => (
+                            <Badge key={s} variant="secondary" className="text-xs">
+                              {s}
+                            </Badge>
+                          ))}
+                        </div>
+                      </>
                     )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-      </main>
+                  </CardContent>
+                </Card>
 
-      <footer className="border-t border-zinc-800 mt-12 py-4 text-center text-xs text-zinc-600">
-        Source of truth: tjr_mm6 · Palco Labs
-      </footer>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:col-span-2">
+                  <KpiCard label="Events" value={journey.summary.totalEvents} />
+                  <KpiCard label="Hyros Sales" value={journey.summary.hyrosSales} />
+                  <KpiCard label="Revenue" value={formatCurrency(journey.summary.totalRevenue)} />
+                  <KpiCard label="Linked Emails" value={journey.summary.linkedEmails} />
+                  <KpiCard label="Opt-ins" value={journey.summary.hyrosOptins} />
+                  <KpiCard label="Calls" value={journey.summary.hyrosCalls + journey.summary.bookedCalls} />
+                  <KpiCard label="CRM Sales" value={journey.summary.crmSales} />
+                  <KpiCard label="Whop" value={journey.summary.whopMemberships} />
+                </div>
+              </div>
+
+              {journey.linkedIdentities.length > 0 && (
+                <Card className="border-amber-200 bg-amber-50/50 py-0">
+                  <CardHeader className="py-4">
+                    <CardTitle className="flex items-center gap-2 text-sm text-amber-800">
+                      <Link2 className="size-4" />
+                      Cross-identified emails ({journey.linkedIdentities.length})
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pb-4 pt-0">
+                    <div className="flex flex-wrap gap-2">
+                      {journey.linkedIdentities.map((i) => (
+                        <Button
+                          key={i.email}
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setQuery(i.email);
+                            fetchJourney(i.email);
+                          }}
+                          className="h-auto py-1.5 text-xs font-normal"
+                        >
+                          {i.email}
+                          <span className="text-muted-foreground">· {i.linkReason}</span>
+                        </Button>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              <Card className="gap-0 py-0">
+                <CardHeader className="flex-row items-center justify-between border-b py-4">
+                  <div>
+                    <CardTitle className="text-base">User Journey</CardTitle>
+                    <CardDescription>
+                      Match: {journey.matchType} · {journey.events.length} events
+                    </CardDescription>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <ScrollArea className="h-[600px]">
+                    <div className="divide-y divide-border">
+                      {journey.events.map((event) => (
+                        <div key={event.id} className="px-6 py-4 transition-colors hover:bg-accent/50">
+                          <div className="flex items-start gap-4">
+                            <div
+                              className={cn(
+                                "flex size-9 shrink-0 items-center justify-center rounded-lg border border-border bg-muted",
+                                EVENT_ACCENT[event.type] && `border-l-4 ${EVENT_ACCENT[event.type]}`
+                              )}
+                            >
+                              {EVENT_ICONS[event.type] ?? <Activity className="size-4" />}
+                            </div>
+
+                            <div className="min-w-0 flex-1">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span className="text-sm font-medium text-foreground">{event.title}</span>
+                                <Badge variant={SOURCE_VARIANT[event.sourceSystem] ?? "outline"} className="text-[10px] uppercase">
+                                  {event.sourceSystem}
+                                </Badge>
+                                {event.value != null && event.value > 0 && (
+                                  <span className="text-xs font-medium text-green-600">
+                                    {formatCurrency(event.value, event.currency ?? "USD")}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="mt-1 text-xs text-muted-foreground">{formatDate(event.occurredAt)}</p>
+
+                              {event.meta && Object.keys(event.meta).length > 0 && (
+                                <div className="mt-2 flex flex-wrap gap-1.5">
+                                  {Object.entries(event.meta)
+                                    .filter(([, v]) => v != null && v !== "")
+                                    .slice(0, 5)
+                                    .map(([k, v]) => (
+                                      <Badge key={k} variant="outline" className="text-[10px] font-normal">
+                                        {k}: {Array.isArray(v) ? v.slice(0, 3).join(", ") : String(v)}
+                                      </Badge>
+                                    ))}
+                                </div>
+                              )}
+                            </div>
+
+                            {event.payload != null && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setExpandedEvent(expandedEvent === event.id ? null : event.id)}
+                                className="shrink-0"
+                              >
+                                <ChevronRight
+                                  className={cn("size-4 transition-transform", expandedEvent === event.id && "rotate-90")}
+                                />
+                              </Button>
+                            )}
+                          </div>
+
+                          {expandedEvent === event.id && event.payload != null && (
+                            <pre className="mt-3 max-h-64 overflow-auto rounded-md border border-border bg-muted p-3 text-[11px] text-muted-foreground">
+                              {JSON.stringify(event.payload, null, 2)}
+                            </pre>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

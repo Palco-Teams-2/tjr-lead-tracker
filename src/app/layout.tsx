@@ -1,23 +1,26 @@
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
 
+const inter = Inter({
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
-  title: "TJR Lead Tracker",
-  description: "Cross-platform lead identity and journey tracker — Hyros, Dregs, Fingerprint.js",
+  title: {
+    default: "TJR Lead Tracker",
+    template: "%s | TJR Lead Tracker",
+  },
+  description: "Cross-platform lead identity and journey tracker",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body>{children}</body>
+      <body className={`${inter.className} antialiased`}>
+        <TooltipProvider>{children}</TooltipProvider>
+      </body>
     </html>
   );
 }
