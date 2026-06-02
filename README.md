@@ -1,6 +1,6 @@
 # TJR Lead Tracker
 
-Single-page lead identity and journey tracker. Cross-identifies users from the **tjr_mm6** Postgres database by stitching Hyros opt-ins, attributed sales, calls, CRM records, Whop memberships, and shared IP signals.
+Single-page lead identity and journey tracker. Cross-identifies users from the **tjr_mm6** Postgres database by stitching Hyros opt-ins, attributed sales, calls, CRM records, Whop memberships, and **Dregs device graph** links (shared devices, not Hyros IPs).
 
 ## Stack
 

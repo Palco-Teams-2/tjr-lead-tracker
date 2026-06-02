@@ -268,7 +268,7 @@ export default function LeadTrackerDashboard() {
             </div>
             <h2 className="mb-2 text-xl font-semibold">Search a lead to build their journey</h2>
             <p className="max-w-md text-sm text-muted-foreground">
-              Cross-identifies users from tjr_mm6 — Hyros, CRM, Whop, and shared IP signals.
+              Cross-identifies users from tjr_mm6 — Hyros, CRM, Whop, and Dregs device graph.
             </p>
           </div>
         )}
@@ -361,6 +361,11 @@ export default function LeadTrackerDashboard() {
                           Dub: <code className="rounded bg-muted px-1.5 py-0.5 text-xs text-foreground">{journey.profile.dubId}</code>
                         </div>
                       )}
+                      {journey.profile?.dregs && (
+                        <div className="flex items-center gap-2">
+                          Dregs uniqueness: {journey.profile.dregs.uniquenessScore ?? "—"} · devices: {journey.profile.dregs.deviceCount}
+                        </div>
+                      )}
                     </div>
                   </div>
                   {journey.summary.attributionSources.length > 0 && (
@@ -391,7 +396,7 @@ export default function LeadTrackerDashboard() {
               <div className="pt-4">
                 {journey.linkedIdentities.length === 0 ? (
                   <div className="rounded-lg border border-border bg-card p-12 text-center text-sm text-muted-foreground">
-                    No cross-identified emails found for this lead.
+                    No Dregs-linked emails found for this lead.
                   </div>
                 ) : (
                   <div className="rounded-lg border border-border bg-card p-4">

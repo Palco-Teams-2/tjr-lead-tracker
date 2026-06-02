@@ -1,3 +1,4 @@
+import { resolveDregsLinks } from "./dregs";
 import { getPool } from "./db";
 import {
   extractDubId,
@@ -63,7 +64,6 @@ export async function buildJourney(query: string): Promise<JourneyResult | null>
   const emails = new Set<string>();
   const phones = new Set<string>();
   const crmLeadIds = new Set<string>();
-  const ips = new Set<string>();
   const dubIds = new Set<string>();
   let matchType = "unknown";
   let primaryEmail: string | null = null;
@@ -189,42 +189,27 @@ export async function buildJourney(query: string): Promise<JourneyResult | null>
     if (l.crm_lead_id) crmLeadIds.add(l.crm_lead_id);
   }
 
-  // IP-based linking from Hyros
-  const ipRes = await pool.query(
-    `SELECT DISTINCT unnest(lead_ips) AS ip FROM fct_hyros_attributed_sales WHERE LOWER(lead_email) = ANY($1::text[]) AND lead_ips IS NOT NULL`,
-    [emailList]
-  );
-  for (const r of ipRes.rows) {
-    if (r.ip && r.ip !== "0.0.0.0") ips.add(r.ip);
+  // Dregs device graph — shared devices, not Hyros IPs
+  const dregs = await resolveDregsLinks(emailList);
+  if (dregs.profile && profile) {
+    profile.dregs = dregs.profile;
+  } else if (dregs.profile && !profile && emailList[0]) {
+    profile = { email: emailList[0], dregs: dregs.profile };
   }
-
-  if (ips.size > 0) {
-    const ipList = [...ips];
-    const ipLinked = await pool.query(
-      `SELECT DISTINCT lead_email FROM fct_hyros_attributed_sales
-       WHERE lead_ips::text[] && $1::text[] AND NOT (LOWER(lead_email) = ANY($2::text[]))
-       LIMIT 15`,
-      [ipList, emailList]
-    );
-    for (const r of ipLinked.rows) {
-      if (r.lead_email) {
-        linkedIdentities.push({
-          email: r.lead_email,
-          linkReason: `shared_ip (${ipList.slice(0, 2).join(", ")})`,
-        });
-        emails.add(r.lead_email.toLowerCase());
-      }
-    }
+  for (const link of dregs.linked) {
+    linkedIdentities.push({
+      email: link.email,
+      name: link.name,
+      linkReason: link.linkReason,
+    });
   }
-
-  const allEmails = [...new Set([...emailList, ...linkedIdentities.map((i) => i.email.toLowerCase())])];
 
   // --- Hyros opt-ins ---
   const optins = await pool.query(
     `SELECT id, lead_email, lead_first_name, lead_last_name, lead_ips, lead_tags, payload, created_at, event_type
      FROM hyros_lead_opt_ins WHERE LOWER(lead_email) = ANY($1::text[])
      ORDER BY created_at ASC`,
-    [allEmails]
+    [emailList]
   );
   for (const o of optins.rows) {
     pushEvent(events, {
@@ -246,7 +231,7 @@ export async function buildJourney(query: string): Promise<JourneyResult | null>
             lead_ips, lead_tags, full_payload, created_at, platform, campaign, adset, is_organic
      FROM fct_hyros_attributed_sales WHERE LOWER(lead_email) = ANY($1::text[])
      ORDER BY created_at ASC`,
-    [allEmails]
+    [emailList]
   );
   for (const s of hyrosSales.rows) {
     const price = parseFloat(s.product_price ?? "0");
@@ -277,7 +262,7 @@ export async function buildJourney(query: string): Promise<JourneyResult | null>
     `SELECT id, lead_email, lead_first_name, lead_last_name, lead_ips, lead_tags, payload, created_at, event_type
      FROM hyros_attributed_calls WHERE LOWER(lead_email) = ANY($1::text[])
      ORDER BY created_at ASC`,
-    [allEmails]
+    [emailList]
   );
   for (const c of hyrosCalls.rows) {
     pushEvent(events, {
@@ -338,7 +323,7 @@ export async function buildJourney(query: string): Promise<JourneyResult | null>
   const whop = await pool.query(
     `SELECT id, email, product_title, status, whop_created_at, created_at, plan_id
      FROM whop_memberships WHERE LOWER(email) = ANY($1::text[]) ORDER BY created_at ASC`,
-    [allEmails]
+    [emailList]
   );
   for (const w of whop.rows) {
     pushEvent(events, {
@@ -374,7 +359,7 @@ export async function buildJourney(query: string): Promise<JourneyResult | null>
   const triage = await pool.query(
     `SELECT id, lead_email, lead_name, phone, source, status, start_time, created_at, closer_email
      FROM triage_tickets WHERE LOWER(lead_email) = ANY($1::text[]) ORDER BY created_at ASC`,
-    [allEmails]
+    [emailList]
   );
   for (const t of triage.rows) {
     pushEvent(events, {
@@ -417,8 +402,8 @@ export async function buildJourney(query: string): Promise<JourneyResult | null>
     attributionSources,
   };
 
-  if (!profile && allEmails[0]) {
-    profile = { email: allEmails[0] };
+  if (!profile && emailList[0]) {
+    profile = { email: emailList[0] };
   }
 
   return {

@@ -1,3 +1,5 @@
+import type { DregsProfile } from "./dregs";
+
 export type JourneyEvent = {
   id: string;
   type: string;
@@ -21,6 +23,7 @@ export type LinkedIdentity = {
   crmLeadId?: string | null;
 };
 
+
 export type LeadProfile = {
   email: string;
   name?: string | null;
@@ -32,6 +35,7 @@ export type LeadProfile = {
   createdAt?: string | null;
   dubId?: string | null;
   hyrosLeadId?: string | null;
+  dregs?: DregsProfile | null;
 };
 
 export type JourneySummary = {
