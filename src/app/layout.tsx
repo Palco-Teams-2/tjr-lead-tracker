@@ -9,10 +9,10 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "TJR Lead Tracker",
-    template: "%s | TJR Lead Tracker",
+    default: "Palco Labs App",
+    template: "%s | Palco Labs App",
   },
-  description: "Cross-platform lead identity and journey tracker",
+  description: "Lead identity and journey tracker",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
