@@ -67,3 +67,14 @@ export type SearchSuggestion = {
   phone?: string | null;
   eventCount?: number;
 };
+
+export type RecentActivityItem = {
+  id: string;
+  email: string;
+  name: string | null;
+  actionType: string;
+  title: string;
+  sourceSystem: string;
+  occurredAt: string;
+  value: number | null;
+};

@@ -19,6 +19,7 @@ import { cn, formatCurrency, formatDate } from "@/lib/utils";
 import { STAGE_COLORS, STAGE_LABELS } from "@/lib/normalize";
 import type { JourneyResult, SearchSuggestion } from "@/lib/types";
 import { KpiCard } from "@/components/dashboard/kpi-card";
+import { RecentActivityFeed } from "@/components/recent-activity-feed";
 import { StatsCard10 } from "@/components/stats-card10";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -253,7 +254,17 @@ export default function LeadTrackerDashboard() {
         </div>
       </div>
 
-      <div className="px-4 pt-4">
+      <div className="flex flex-col gap-4 px-4 pt-4 pb-6 lg:flex-row">
+        <RecentActivityFeed
+          className="w-full shrink-0 lg:max-h-[calc(100svh-8rem)] lg:w-80 xl:w-96"
+          activeEmail={journey?.profile?.email ?? query}
+          onSelectLead={(email) => {
+            setQuery(email);
+            fetchJourney(email);
+          }}
+        />
+
+        <div className="min-w-0 flex-1">
         {error && (
           <div className="mb-4 flex items-center gap-3 rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-destructive">
             <AlertCircle className="size-5 shrink-0" />
@@ -262,19 +273,19 @@ export default function LeadTrackerDashboard() {
         )}
 
         {!journey && !loading && !error && (
-          <div className="flex flex-col items-center justify-center py-32 text-center">
+          <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border py-24 text-center">
             <div className="mb-6 flex size-16 items-center justify-center rounded-xl border border-border bg-muted">
               <TrendingUp className="size-8 text-muted-foreground" />
             </div>
-            <h2 className="mb-2 text-xl font-semibold">Search a lead to build their journey</h2>
+            <h2 className="mb-2 text-xl font-semibold">Select a lead from the feed or search</h2>
             <p className="max-w-md text-sm text-muted-foreground">
-              Cross-identifies users from tjr_mm6 — Hyros, CRM, Whop, and Dregs device graph.
+              Live activity from Hyros, CRM, Whop, and triage — click any row to open their full journey.
             </p>
           </div>
         )}
 
         {loading && !journey && (
-          <div className="flex items-center justify-center py-32">
+          <div className="flex items-center justify-center rounded-lg border border-border py-24">
             <Loader2 className="size-8 animate-spin text-muted-foreground" />
           </div>
         )}
@@ -442,6 +453,7 @@ export default function LeadTrackerDashboard() {
             </TabsContent>
           </Tabs>
         )}
+        </div>
       </div>
     </main>
   );
