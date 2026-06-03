@@ -12,7 +12,6 @@ import {
   Loader2,
   AlertCircle,
   Link2,
-  TrendingUp,
   RefreshCw,
 } from "lucide-react";
 import { cn, formatCurrency, formatDate } from "@/lib/utils";
@@ -256,7 +255,10 @@ export default function LeadTrackerDashboard() {
 
       <div className="flex flex-col gap-4 px-4 pt-4 pb-6 lg:flex-row">
         <RecentActivityFeed
-          className="w-full shrink-0 lg:max-h-[calc(100svh-8rem)] lg:w-80 xl:w-96"
+          className={cn(
+            "w-full shrink-0 lg:max-h-[calc(100svh-8rem)]",
+            journey || loading ? "lg:w-80 xl:w-96" : "max-w-2xl"
+          )}
           activeEmail={journey?.profile?.email ?? query}
           onSelectLead={(email) => {
             setQuery(email);
@@ -264,6 +266,7 @@ export default function LeadTrackerDashboard() {
           }}
         />
 
+        {(journey || loading) && (
         <div className="min-w-0 flex-1">
         {error && (
           <div className="mb-4 flex items-center gap-3 rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-destructive">
@@ -272,20 +275,8 @@ export default function LeadTrackerDashboard() {
           </div>
         )}
 
-        {!journey && !loading && !error && (
-          <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border py-24 text-center">
-            <div className="mb-6 flex size-16 items-center justify-center rounded-xl border border-border bg-muted">
-              <TrendingUp className="size-8 text-muted-foreground" />
-            </div>
-            <h2 className="mb-2 text-xl font-semibold">Select a lead from the feed or search</h2>
-            <p className="max-w-md text-sm text-muted-foreground">
-              Live activity from Hyros, CRM, Whop, and triage — click any row to open their full journey.
-            </p>
-          </div>
-        )}
-
         {loading && !journey && (
-          <div className="flex items-center justify-center rounded-lg border border-border py-24">
+          <div className="flex items-center justify-center py-24">
             <Loader2 className="size-8 animate-spin text-muted-foreground" />
           </div>
         )}
@@ -454,6 +445,7 @@ export default function LeadTrackerDashboard() {
           </Tabs>
         )}
         </div>
+        )}
       </div>
     </main>
   );
