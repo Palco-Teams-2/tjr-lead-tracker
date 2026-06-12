@@ -1,3 +1,5 @@
+import { PageShell } from "@/components/page-shell";
+
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return <PageShell>{children}</PageShell>;
 }
